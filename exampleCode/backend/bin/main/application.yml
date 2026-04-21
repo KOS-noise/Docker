@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: integrated-practice
+
+  # ============================================================
+  # 🔑 Google OAuth 2.0 설정
+  # 사전 준비: Google Cloud Console (https://console.cloud.google.com/)
+  #
+  # [발급 절차]
+  # 1. 새 프로젝트 생성
+  # 2. 'API 및 서비스' > '사용자 인증 정보' > 'OAuth 2.0 클라이언트 ID' 생성
+  # 3. 애플리케이션 유형: '웹 애플리케이션' 선택
+  # 4. 승인된 리디렉션 URI 추가:
+  #    → http://localhost:8080/login/oauth2/code/google
+  # 5. 발급된 클라이언트 ID와 보안 비밀번호(Secret)를 아래에 입력
+  # ============================================================
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: example-client-id        # ← 여기에 발급받은 Client ID 입력
+            client-secret: example-secret # ← 여기에 발급받은 Secret 입력
+            scope:
+              - email
+              - profile
+
+  # MySQL DB 설정
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/mydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${SPRING_DATASOURCE_USERNAME:myuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:mypass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # JPA
+  jpa:
+    hibernate:
+      ddl-auto: update      # Docker 환경에서는 update 또는 validate 권장
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: true
+
+  logging:
+    level:
+      org.springframework.web: INFO
+
+# 프론트엔드 주소 (CORS 및 리다이렉트 설정에 사용)
+app:
+  frontend-url: http://localhost:5173
